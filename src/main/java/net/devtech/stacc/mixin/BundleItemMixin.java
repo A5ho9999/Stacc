@@ -10,8 +10,8 @@ import net.minecraft.item.ItemStack;
 
 @Mixin(BundleItem.class)
 public class BundleItemMixin {
-    @Inject(at = @At("RETURN"), method = "getItemOccupancy", cancellable = true)
-    private static void getItemOccupancyFix(ItemStack stack, CallbackInfoReturnable<Integer> c) {
+    @Inject(at = @At("RETURN"), method = "getItemBarStep", cancellable = true)
+    private void getItemOccupancyFix(ItemStack stack, CallbackInfoReturnable<Integer> c) {
         if (c.getReturnValue() <= 0) {
             c.setReturnValue(1);
         }

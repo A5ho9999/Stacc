@@ -4,10 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.logging.LogUtils;
-import net.devtech.stacc.mixin.ItemMaxCountAccess;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.mixin.item.ItemAccessor;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -81,7 +83,7 @@ public class StaccLoader implements ModInitializer {
 								}
 							}
 						} catch (IOException e) {
-							throw rethrow(new IOException("Invalid stack:config.json in pack \"%s\", format is {\"item:id\": 43, \"item:id2\": 5785, ...}!".formatted(resource.getPack().getName()), e));
+							throw rethrow(new IOException("Invalid stack:config.json in pack \"%s\", format is {\"item:id\": 43, \"item:id2\": 5785, ...}!".formatted(resource.getPack().getId()), e));
 						}
 					}
 					return stackSizes;
@@ -97,12 +99,12 @@ public class StaccLoader implements ModInitializer {
 							LOGGER.warn("No item found for: %s".formatted(key));
 						} else {
 							int old = item.getMaxCount();
-							((ItemMaxCountAccess)item).setMaxCount(value);
+							((ItemAccessor)item).setComponents(ComponentMap.builder().addAll(item.getComponents()).add(DataComponentTypes.MAX_STACK_SIZE, value).build());
 							LOGGER.info("Changed max count of %s from %s to %s!".formatted(key, old, value));
 						}
 					}
 					restore.forEach((item, originalCount) -> {
-						((ItemMaxCountAccess) item).setMaxCount(originalCount);
+						((ItemAccessor)item).setComponents(ComponentMap.builder().addAll(item.getComponents()).add(DataComponentTypes.MAX_STACK_SIZE, originalCount).build());
 						originalSizes.remove(item);
 					});
 					StaccGlobals.lastSize = -1;

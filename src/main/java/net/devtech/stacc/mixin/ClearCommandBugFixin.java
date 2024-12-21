@@ -18,9 +18,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 @Mixin (ClearCommand.class)
 public class ClearCommandBugFixin {
-	@Inject (method = "execute", at = @At ("HEAD"))
-	private static void clearCommand(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Predicate<ItemStack> item, int maxCount,
-	                                 CallbackInfoReturnable<Integer> cir) {
+	@Inject (method = "execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/util/Collection;Ljava/util/function/Predicate;I)I", at = @At ("HEAD"))
+	private static void clearCommand(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Predicate<ItemStack> item, int maxCount, CallbackInfoReturnable<Integer> cir) {
 		StaccGlobals.COUNT.set(0L);
 	}
 
